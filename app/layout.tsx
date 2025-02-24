@@ -1,0 +1,104 @@
+import "./globals.css"
+import type { Metadata, Viewport } from "next"
+import { M_PLUS_1 } from "next/font/google"
+import { createClient } from "@/utils/supabase/server"
+import Navigation from "@/components/navigation/Navigation"
+import ToastProvider from "@/components/providers/ToastProvider"
+
+const mPlus1 = M_PLUS_1({
+  weight: ["400", "700", "900"],
+  subsets: ["latin"],
+})
+
+const siteConfig = {
+  title: "BaseIQ",
+  description: "",
+  keywords: [""],
+  url: "",
+  ogImage: "/og-image.png",
+  twitterHandle: "@BaseIQ",
+}
+
+// export const metadata: Metadata = {
+//   metadataBase: new URL(siteConfig.url),
+//   title: {
+//     template: `%s | ${siteConfig.title}`,
+//     default: siteConfig.title,
+//   },
+//   description: siteConfig.description,
+//   keywords: siteConfig.keywords,
+//   authors: [{ name: "BaseIQ" }],
+//   creator: "BaseIQ",
+//   robots: "index, follow",
+
+//   openGraph: {
+//     type: "website",
+//     locale: "ja_JP",
+//     url: siteConfig.url,
+//     title: siteConfig.title,
+//     description: siteConfig.description,
+//     siteName: siteConfig.title,
+//     images: [
+//       {
+//         url: siteConfig.ogImage,
+//         width: 1200,
+//         height: 630,
+//         alt: siteConfig.title,
+//       },
+//     ],
+//   },
+
+//   twitter: {
+//     card: "summary_large_image",
+//     title: siteConfig.title,
+//     description: siteConfig.description,
+//     images: [siteConfig.ogImage],
+//     creator: siteConfig.twitterHandle,
+//   },
+
+//   other: {
+//     "discord:type": "website",
+//     "discord:title": siteConfig.title,
+//     "discord:description": siteConfig.description,
+//     "discord:image": siteConfig.ogImage,
+//   },
+// }
+
+// export const viewport: Viewport = {
+//   width: "device-width",
+//   initialScale: 1,
+//   maximumScale: 1,
+//   userScalable: false,
+// }
+
+interface RootLayoutProps {
+  children: React.ReactNode
+}
+
+// ルートレイアウト
+const RootLayout = async ({ children }: RootLayoutProps) => {
+  const supabase = createClient()
+  const { data } = await supabase.auth.getUser()
+  const user = data?.user
+
+  return (
+    <html lang="ja">
+      <body className={mPlus1.className}>
+        <ToastProvider />
+        <div className="flex min-h-screen flex-col">
+          <Navigation user={user} />
+
+          <main className="flex-1">{children}</main>
+
+          <footer className="border-t py-2">
+            <div className="flex flex-col items-center justify-center text-sm space-y-5">
+              <div>©BaseIQ. ALL Rights Reserved.</div>
+            </div>
+          </footer>
+        </div>
+      </body>
+    </html>
+  )
+}
+
+export default RootLayout
